@@ -17,18 +17,18 @@ local groupsRequired = {
 local banned = ""
 local bannedTable = {}
 
-RegisterServerEvent('CheckPermissions')
+'CheckPermissions')
 AddEventHandler('CheckPermissions', function(source, user)
-	TriggerEvent("es:getPlayerFromId", source, function(user)
-		if user.getPermissions() >= 4 then
-			TriggerClientEvent('SetIsAdmin', source)
-			TriggerClientEvent('chatMessage', source, 'triggered window')
-		else
-			TriggerClientEvent('chatMessage', source, 'Did not work')
+	TriggerEvent("es:getPlayers", function(pl)
+		for k,v in pairs(pl) do
+			TriggerEvent("es:getPlayerFromId", k, function(user)
+				if(user.getPermissions() >= 4 and k == source)then
+					TriggerClientEvent('SetIsAdmin', source)
+				end
+			end)
 		end
 	end)
 end)
-
 function loadBans()
 	banned = LoadResourceFile(GetCurrentResourceName(), "bans.json") or ""
 	if banned ~= "" then

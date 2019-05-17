@@ -1,19 +1,27 @@
 local group = "user"
 local states = {}
+local isadmin = false
 states.frozen = false
 states.frozenPos = nil
 
 Citizen.CreateThread(function()
 	while true do
 		Citizen.Wait(0)
-		
-		if (IsControlJustPressed(1, 212) and IsControlJustPressed(1, 213)) then
-			if true then
-				SetNuiFocus(true, true)
-				SendNUIMessage({type = 'open', players = getPlayers()})
+			if (IsControlJustPressed(1, 212) and IsControlJustPressed(1, 213)) then
+				TriggerServerEvent('CheckPermissions')
+				if true then
+					if isadmin then
+						SetNuiFocus(true, true)
+						SendNUIMessage({type = 'open', players = getPlayers()})
+					end
+				end
 			end
-		end
 	end
+end)
+
+RegisterNetEvent('SetIsAdmin')
+AddEventHandler('SetIsAdmin', function()
+	isadmin = true
 end)
 
 RegisterNetEvent('es_admin:setGroup')
