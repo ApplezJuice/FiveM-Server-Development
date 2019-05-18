@@ -17,18 +17,6 @@ local groupsRequired = {
 local banned = ""
 local bannedTable = {}
 
-RegisterServerEvent('CheckPermissions')
-AddEventHandler('CheckPermissions', function(source, user)
-	TriggerEvent("es:getPlayerFromId", source, function(user)
-		if user.getPermissions() >= 4 then
-			TriggerClientEvent('SetIsAdmin', source)
-			TriggerClientEvent('chatMessage', source, 'triggered window')
-		else
-			TriggerClientEvent('chatMessage', source, 'Did not work')
-		end
-	end)
-end)
-
 function loadBans()
 	banned = LoadResourceFile(GetCurrentResourceName(), "bans.json") or ""
 	if banned ~= "" then
@@ -109,6 +97,18 @@ AddEventHandler('es:incorrectAmountOfArguments', function(source, wantedArgument
 			args = {"^1SYSTEM", "Incorrect amount of arguments! (" .. passedArguments .. " passed, " .. requiredArguments .. " wanted)"}
 		})
 	end
+end)
+
+RegisterServerEvent('CheckPermissions')
+AddEventHandler('CheckPermissions', function()
+	TriggerEvent("es:getPlayerFromId", source, function(user)
+		if user.getPermissions() >= 4 then
+			TriggerClientEvent('SetIsAdmin', source)
+			TriggerClientEvent('chatMessage', source, 'triggered window')
+		else
+			TriggerClientEvent('chatMessage', source, 'Did not work')
+		end
+	end)
 end)
 
 RegisterServerEvent('es_admin:all')
@@ -408,13 +408,15 @@ RegisterCommand('setmoney', function(source, args, raw)
 end, true)
 
 -- Default commands
-TriggerEvent('es:addCommand', 'admin', function(source, args, user)
+TriggerEvent('es:addAdminCommand', 'admin', 4, function(source, args, user)
 	TriggerClientEvent('chat:addMessage', source, {
 		args = {"^1SYSTEM", "Level: ^*^2 " .. tostring(user.get('permission_level'))}
 	})
 	TriggerClientEvent('chat:addMessage', source, {
 		args = {"^1SYSTEM", "Group: ^*^2 " .. user.getGroup()}
 	})
+end, function(source, args, user) 
+     -- Doesn't have permission
 end, {help = "Shows what admin level you are and what group you're in"})
 
 -- Ban a person
