@@ -6,11 +6,13 @@
 		"esx-org/esx_addonaccount": "1.0.0",
 		"esx-org/esx_jobs": "1.1.0",
 		"esx-org/skinchanger": "1.0.1",
-		"esx-org/esx_skin": "1.0.1"
+		"esx-org/esx_skin": "1.0.1",
+		"esx-org/esx_voice": "1.1.0"
 	},
 	"folder": {
 		"esx-org/esx_addonaccount": "esx",
 		"esx-org/esx_jobs": "esx",
-		"esx-org/esx_skin": "esx"
+		"esx-org/esx_skin": "esx",
+		"esx-org/esx_voice": "esx"
 	}
 }

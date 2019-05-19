@@ -408,6 +408,15 @@ RegisterCommand('setmoney', function(source, args, raw)
 end, true)
 
 -- Default commands
+
+TriggerEvent("es:addCommand", 'tweet', function(source, args, user)
+	TriggerClientEvent('chatMessage', -1, "^0[^4Twitter^0]", {30, 144, 255}, "(^3" .. GetPlayerName(source) .. " ^5Tweets^0) " .. table.concat(args, " "))
+end, {help = "Enter a message to send to twitter"})
+
+TriggerEvent("es:addCommand", 'ooc', function(source, args, user)
+	TriggerClientEvent('chatMessage', -1, "^0[^2OOC^0] ", {30, 144, 255}, "^3" .. GetPlayerName(source) .. "^0: ^2" .. table.concat(args, " "))
+end, {help = "Only use out of character for emergencies!"})
+
 TriggerEvent('es:addAdminCommand', 'admin', 4, function(source, args, user)
 	TriggerClientEvent('chat:addMessage', source, {
 		args = {"^1SYSTEM", "Level: ^*^2 " .. tostring(user.get('permission_level'))}
