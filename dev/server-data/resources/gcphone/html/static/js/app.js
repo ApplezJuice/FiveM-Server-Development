@@ -1134,11 +1134,11 @@ webpackJsonp([0], [, , , , , , function(t, e, n) {
                 return t.appelsInfo
             },
             appelsDisplayName: function(t, e) {
-                if (!0 === t.appelsInfo.hidden) return "Appels masqué";
+                if (!0 === t.appelsInfo.hidden) return "Anonymous";
                 var n = e.appelsDisplayNumber;
                 return (e.contacts.find(function(t) {
                     return t.number === n
-                }) || {}).display || "Inconnu"
+                }) || {}).display || "Unknown"
             },
             appelsDisplayNumber: function(t, e) {
                 return !0 === e.isInitiatorCall ? t.appelsInfo.receiver_num : !0 === t.appelsInfo.hidden ? "###-####" : t.appelsInfo.transmitter_num
@@ -3242,7 +3242,7 @@ webpackJsonp([0], [, , , , , , function(t, e, n) {
                     title: "Fresh Install",
                     onValid: "resetPhone",
                     values: {
-                        "TOUT Remove": "accept",
+                        "Remove All": "accept",
                         Cancel: "cancel"
                     }
                 }]

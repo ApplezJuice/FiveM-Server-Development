@@ -10,6 +10,7 @@ function getPhoneRandomNumber()
 	local numBase0 = math.random(100,999)
 	local numBase1 = math.random(0,9999)
 	local num = string.format("%03d-%04d", numBase0, numBase1 )
+	print(tostring(num))
 	return num
 end
 
