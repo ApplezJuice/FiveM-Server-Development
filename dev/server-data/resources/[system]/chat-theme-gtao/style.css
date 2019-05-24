@@ -10,11 +10,13 @@
     top: calc(50% - (var(--size) / 2));
     height: var(--size) !important;
 
-    background: inherit !important;
-
+    //background: inherit !important;
+background: transparent;
     text-align: right;
 
     left: auto;
+
+background-color: rgba(52, 73, 94, 0.0);
 
     user-select: none;
 }

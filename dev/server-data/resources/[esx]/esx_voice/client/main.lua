@@ -16,7 +16,7 @@ local voice = {default = 5.0, shout = 12.0, whisper = 1.0, current = 0, level = 
 function drawLevel(r, g, b, a)
 	SetTextFont(4)
 	SetTextProportional(1)
-	SetTextScale(0.5, 0.5)
+	SetTextScale(0.2, 0.2)
 	SetTextColour(r, g, b, a)
 	SetTextDropShadow(0, 0, 0, 0, 255)
 	SetTextEdge(1, 0, 0, 0, 255)
@@ -25,7 +25,7 @@ function drawLevel(r, g, b, a)
 
 	BeginTextCommandDisplayText("STRING")
 	AddTextComponentSubstringPlayerName(_U('voice', voice.level))
-	EndTextCommandDisplayText(0.024, 0.77)
+	EndTextCommandDisplayText(0.088, 0.983)
 end
 
 AddEventHandler('onClientMapStart', function()

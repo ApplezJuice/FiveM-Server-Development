@@ -47,6 +47,16 @@ Citizen.CreateThread(function()
     while true do
         -- Loop forever and update HUD every frame
         Citizen.Wait(0)
+	
+	-- Custom Disable Radar
+	--local playerPedForRadar = GetPlayerPed(-1)
+	--	local playerVeh = GetVehiclePedIsIn(playerPedForRadar, false)
+	--	
+	--	if IsPedInAnyVehicle(playerPedForRadar, true) then
+	--		DisplayRadar(true)
+	--	else
+	--		DisplayRadar(false)
+	--	end	
 
         -- Get player PED, position and vehicle and save to locals
         local player = GetPlayerPed(-1)
@@ -124,8 +134,8 @@ Citizen.CreateThread(function()
                 -- Draw fuel gauge; always displays 100 but can be modified by setting currentFuel with an API call
                 local currentFuel = GetVehicleFuelLevel(vehicle)
                 local fuelColor = (currentFuel >= fuelWarnLimit) and fuelColorOver or fuelColorUnder
-                drawTxt(("%.3d"):format(math.ceil(currentFuel)), 2, fuelColor, 0.8, screenPosX + 0.055, screenPosY + 0.000)
-                drawTxt("FUEL", 2, fuelColorText, 0.4, screenPosX + 0.085, screenPosY + 0.018)
+               -- drawTxt(("%.3d"):format(math.ceil(currentFuel)), 2, fuelColor, 0.8, screenPosX + 0.055, screenPosY + 0.000)
+               -- drawTxt("FUEL", 2, fuelColorText, 0.4, screenPosX + 0.085, screenPosY + 0.018)
 
                 -- Draw cruise control status
                 local cruiseColor = cruiseIsOn and cruiseColorOn or cruiseColorOff
