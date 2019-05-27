@@ -50,10 +50,4 @@ Config.Zones = {
 		Type  = (Config.EnablePlayerManagement and 1 or -1)
 	},
 
-	ResellVehicle = {
-		Pos   = { x = -44.630, y = -1080.738, z = 25.683 },
-		Size  = { x = 3.0, y = 3.0, z = 1.0 },
-		Type  = 1
-	}
-
 }

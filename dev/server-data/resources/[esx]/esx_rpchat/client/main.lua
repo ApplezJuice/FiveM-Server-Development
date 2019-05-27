@@ -4,6 +4,65 @@
 
 --]]
 
+--[[RegisterNetEvent('sendMessage911')
+AddEventHandler('sendMessage911', function(id, name, message)
+  local myId = PlayerId()
+  local pid = GetPlayerFromServerId(id)
+  TriggerServerEvent("chekjob", name, message)
+  if pid == myId then
+    TriggerEvent('chatMessage', "", {0, 150, 200}, " YOUR MESSAGE: [911] || Description: " .. message)
+  end
+end)
+
+RegisterNetEvent('sendMessage911ToCops')
+AddEventHandler('sendMessage911ToCops', function(id, name, message)
+  local myId = PlayerId()
+  local pid = GetPlayerFromServerId(id)
+  if pid == myId then
+    TriggerEvent('chatMessage', "", {0, 50, 200}, " [911] || Description: " .. message)
+  end
+end)]]--
+displayTime = 60 -- in seconds
+blip = nil
+blips = {}
+
+RegisterNetEvent('911:setBlip')
+AddEventHandler('911:setBlip', function(callid, x, y, z)
+  blip = AddBlipForCoord(x, y, z)
+  SetBlipSprite(blip, 488)
+  SetBlipScale(blip, 1.0)
+  SetBlipColour(blip, 3)
+  BeginTextCommandSetBlipName("STRING")
+  AddTextComponentString('911 Call - ' .. callid)
+  EndTextCommandSetBlipName(blip)
+  table.insert(blips, blip)
+  Wait(displayTime * 1000)
+  for i, blip in pairs(blips) do
+      RemoveBlip(blip)
+  end
+end)
+
+RegisterNetEvent('Fax:clientCoords')
+AddEventHandler('Fax:clientCoords', function(service, desc, callid)
+  local ped = GetPlayerPed(PlayerId())
+  local x, y, z = table.unpack(GetEntityCoords(ped, true))
+  TriggerServerEvent('Fax:gotCoords', service, desc, callid, x, y, z)
+end)
+
+---------------------------------------------------------------------------------
+RegisterNetEvent('Fax:SendCall')
+AddEventHandler('Fax:SendCall', function(service, desc, callid, x, y, z)
+    --local ped = GetPlayerPed(PlayerId())
+
+	if service == "pd" or service == "ems" then
+    TriggerServerEvent("Fax:SendCallToTeam", service, desc, callid, x, y, z)
+    end
+
+end)
+
+
+
+
 RegisterNetEvent('sendProximityMessage')
 AddEventHandler('sendProximityMessage', function(id, name, message)
   local myId = PlayerId()

@@ -3,6 +3,7 @@
   ESX RP Chat
 
 --]]
+ESX = nil
 
 function getIdentity(source)
 	local identifier = GetPlayerIdentifiers(source)[1]
@@ -16,21 +17,117 @@ function getIdentity(source)
 			lastname = identity['lastname'],
 			dateofbirth = identity['dateofbirth'],
 			sex = identity['sex'],
-			height = identity['height']
-
+			height = identity['height'],
+			job = identity['job'],
+			number = identity['phone_number']
 		}
 	else
 		return nil
 	end
 end
 
- AddEventHandler('chatMessage', function(source, name, message)
-      if string.sub(message, 1, string.len("/")) ~= "/" then
-          local name = getIdentity(source)
-		TriggerClientEvent("sendProximityMessageMe", -1, source, name.firstname, message)
-      end
-      CancelEvent()
-  end)
+--[[RegisterServerEvent('chekjob')
+AddEventHandler('chekjob', function(n, m)
+	local id = source
+	local emprego = getIdentity(id)
+	if emprego.job == 'police' or emprego.job == 'ambulance' then
+		TriggerClientEvent("sendMessage911ToCops", -1, source, n, m)
+    end
+end)
+
+AddEventHandler('chatMessage', function(source, color, msg)
+	cm = stringsplit(msg, " ")
+	if cm[1] == "/911" then
+		CancelEvent()
+		if tablelength(cm) > 2 then
+			local names3 = GetPlayerName(source)
+			local textmsg = ""
+			for i=1, #cm do
+				if i ~= 1 then
+					textmsg = (textmsg .. " " .. tostring(cm[i]))
+				end
+			end
+		    TriggerClientEvent("sendMessage911", -1, source, names1, textmsg)
+		elseif tablelength(cm) < 2 then
+		    TriggerClientEvent('chatMessage', source, "[911 Call Assistant] Error invalid call, try using this:", {255, 0, 0}, "/911 [Description]")
+		end
+	end
+
+end)]]--
+
+RegisterServerEvent("Fax:gotCoords")
+AddEventHandler("Fax:gotCoords", function(service, desc, callid, xPos, yPos, zPos)
+	TriggerClientEvent("Fax:SendCall", -1, service, desc, callid, xPos, yPos, zPos)
+end)
+
+
+RegisterCommand("911", function(source, args, rawCommand)
+    local service = args[1]
+    local desc = table.concat(args, " ", 2)
+    local s = source
+		--local ped = GetPlayerPed(tonumber(source))
+
+		--local x, y, z = table.unpack(GetEntityCoords(GetPlayerFromServerId(source)))
+		--local msg = rawCommand:sub(4)
+
+    if service == "pd" or service == "ems" then
+        if desc == nil then
+            TriggerClientEvent("chatMessage", source, "^1Please specify a call description.")
+        else
+            callid = s
+						TriggerClientEvent("Fax:clientCoords", source, service, desc, callid)
+            TriggerClientEvent("chatMessage", source, "^4911 Call Sent to " .. service .. ".")
+        end
+
+    else
+        TriggerClientEvent("chatMessage", source, "^1Please specify a service. pd / ems")
+    end
+end)
+
+RegisterServerEvent("Fax:SendCallToTeam")
+AddEventHandler("Fax:SendCallToTeam", function(service, desc, callid, x, y, z)
+    local s = source
+		local plyJob = getIdentity(s)
+		local sender = getIdentity(callid)
+
+		if plyJob.job == 'police' and service == 'pd' then
+			--TriggerClientEvent("chatMessage", s, "^4911 Call [ID:" .. callid .. "] " .. desc)
+			TriggerClientEvent('chat:addMessage', s, {
+					template = '<div style="padding: 0.5vw; margin: 0.5vw; background-color: rgba(158, 23, 23, 0.6); border-radius: 3px;"> <i class="fas fa-globe"></i> 911 CALL - '.. sender.firstname .. ' ' .. sender.lastname .. ' | [ID] '.. callid ..' #'.. sender.number .. '<br> '.. desc ..'</div>'
+			})
+			TriggerClientEvent('911:setBlip', s, callid, x, y, z)
+		elseif plyJob.job == 'ambulance' and service == 'ems' then
+			--TriggerClientEvent("chatMessage", s, "^4911 Call [ID:" .. callid .. "] " .. desc)
+			TriggerClientEvent('chat:addMessage', s, {
+					template = '<div style="padding: 0.5vw; margin: 0.5vw; background-color: rgba(158, 23, 23, 0.6); border-radius: 3px;"> <i class="fas fa-globe"></i> 911 CALL - '.. sender.firstname .. ' ' .. sender.lastname .. ' | [ID] '.. callid ..' #'.. sender.number .. '<br> '.. desc ..'</div>'
+			})
+			TriggerClientEvent('911:setBlip', s, callid, x, y, z)
+		end
+end)
+
+
+ --AddEventHandler('chatMessage', function(source, name, message)
+--      if string.sub(message, 1, string.len("/")) ~= "/" then
+--          local name = getIdentity(source)
+--		TriggerClientEvent("sendProximityMessageMe", -1, source, name.firstname, message)
+--      end
+--      CancelEvent()
+--  end)
+
+RegisterCommand('system', function(source, args, rawCommand)
+	TriggerEvent('es:getPlayerFromId', source, function(user)
+		TriggerEvent('es:canGroupTarget', user.getGroup(), "admin", function(available)
+			if available or user.getGroup() == "superadmin" then
+				 local playerName = GetPlayerName(source)
+			 	 local msg = rawCommand:sub(7)
+			 	 TriggerClientEvent('chat:addMessage', -1, {
+			 			 template = '<div style="padding: 0.5vw; margin: 0.5vw; background-color: rgba(158, 23, 23, 0.6); border-radius: 3px;"><i class="fas fa-globe"></i> SYSTEM:<br> {0}</div>',
+			 			 args = { msg }
+			 	 })
+			end
+		end)
+	end)
+end, false)
 
   -- TriggerEvent('es:addCommand', 'me', function(source, args, user)
   --    local name = getIdentity(source)
@@ -42,7 +139,7 @@ end
   --- TriggerEvent('es:addCommand', 'me', function(source, args, user)
   ---    local name = getIdentity(source)
   ---    TriggerClientEvent("sendProximityMessageMe", -1, source, name.firstname, table.concat(args, " "))
-  -- end) 
+  -- end)
 --  TriggerEvent('es:addCommand', 'me', function(source, args, user)
 --    local name = getIdentity(source)
  --   table.remove(args, 2)
@@ -50,7 +147,7 @@ end
 --end)
 
 
- RegisterCommand('tweet2', function(source, args, rawCommand)
+ RegisterCommand('tweet', function(source, args, rawCommand)
     local playerName = GetPlayerName(source)
     local msg = rawCommand:sub(6)
     local name = getIdentity(source)
@@ -78,19 +175,19 @@ end, false)
     local name = getIdentity(source)
     fal = name.firstname .. " " .. name.lastname
     TriggerClientEvent('chat:addMessage', -1, {
-        template = '<div style="padding: 0.5vw; margin: 0.5vw; background-color: rgba(214, 168, 0, 1); border-radius: 3px;"><i class="fas fa-ad"></i> Advertisement:<br> {1}<br></div>',
+        template = '<div style="padding: 0.5vw; margin: 0.5vw; background-color: rgba(214, 168, 0, 1); border-radius: 3px;"><i class="fas fa-ad"></i> Advertisement - {0}:<br> {1}<br></div>',
         args = { fal, msg }
     })
 end, false)
 
-        RegisterCommand('ooc2', function(source, args, rawCommand)
+	RegisterCommand('ooc', function(source, args, rawCommand)
     local playerName = GetPlayerName(source)
-    local msg = rawCommand:sub(5)
+    local msg = rawCommand:sub(4)
     local name = getIdentity(source)
-
+		fal = name.firstname .. " " .. name.lastname
     TriggerClientEvent('chat:addMessage', -1, {
         template = '<div style="padding: 0.5vw; margin: 0.5vw; background-color: rgba(41, 41, 41, 0.6); border-radius: 3px;"><i class="fas fa-globe"></i> {0}:<br> {1}</div>',
-        args = { playerName, msg }
+        args = { fal, msg }
     })
 end, false)
 

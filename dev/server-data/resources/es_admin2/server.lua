@@ -285,7 +285,7 @@ RegisterCommand('setadmin', function(source, args, raw)
 			if level then
 				TriggerEvent("es:setPlayerData", tonumber(args[1]), "permission_level", tonumber(args[2]), function(response, success)
 					RconPrint(response)
-		
+
 					TriggerClientEvent('es:setPlayerDecorator', tonumber(args[1]), 'rank', tonumber(args[2]), true)
 					TriggerClientEvent('chat:addMessage', -1, {
 						args = {"^1CONSOLE", "Permission level of ^2" .. GetPlayerName(tonumber(args[1])) .. "^0 has been set to ^2 " .. args[2]}
@@ -409,13 +409,13 @@ end, true)
 
 -- Default commands
 
-TriggerEvent("es:addCommand", 'tweet', function(source, args, user)
+--[[TriggerEvent("es:addCommand", 'tweet', function(source, args, user)
 	TriggerClientEvent('chatMessage', -1, "^0[^4Twitter^0]", {30, 144, 255}, "(^3" .. GetPlayerName(source) .. " ^5Tweets^0) " .. table.concat(args, " "))
 end, {help = "Enter a message to send to twitter"})
 
 TriggerEvent("es:addCommand", 'ooc', function(source, args, user)
 	TriggerClientEvent('chatMessage', -1, "^0[^2OOC^0] ", {30, 144, 255}, "^3" .. GetPlayerName(source) .. "^0: ^2" .. table.concat(args, " "))
-end, {help = "Only use out of character for emergencies!"})
+end, {help = "Only use out of character for emergencies!"})]]--
 
 TriggerEvent('es:addAdminCommand', 'admin', 4, function(source, args, user)
 	TriggerClientEvent('chat:addMessage', source, {
@@ -424,7 +424,7 @@ TriggerEvent('es:addAdminCommand', 'admin', 4, function(source, args, user)
 	TriggerClientEvent('chat:addMessage', source, {
 		args = {"^1SYSTEM", "Group: ^*^2 " .. user.getGroup()}
 	})
-end, function(source, args, user) 
+end, function(source, args, user)
      -- Doesn't have permission
 end, {help = "Shows what admin level you are and what group you're in"})
 

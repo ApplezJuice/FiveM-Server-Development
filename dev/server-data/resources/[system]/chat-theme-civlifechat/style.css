@@ -76,9 +76,10 @@ textarea {
   display: block;
   box-sizing: border-box;
   padding: 5px;
+  padding-left: 20px;
   color: white;
-  background-color: rgba(207, 227, 114, 0);
-  width: 50%;
+  background-color: rgba(182, 193, 214, 0.5);
+  width: 100%;
   border-width: 0;
   height: 30%;
   overflow: hidden;
@@ -114,7 +115,7 @@ textarea:focus, input:focus {
   font-size: 0.9rem;
   box-sizing: border-box;
   color: white;
-  background-color: rgba(207, 227, 114, 0);
+  background-color: rgba(182, 193, 214 0.5);
   width: 100%;
 }
 
