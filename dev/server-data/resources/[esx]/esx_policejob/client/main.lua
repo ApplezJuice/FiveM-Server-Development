@@ -668,16 +668,21 @@ function OpenPoliceActionsMenu()
 		}
 	}, function(data, menu)
 
+        if data.current.value == 'jail_menu' then
+            TriggerEvent("esx-qalle-jail:openJailMenu")
+        end
+
 		if data.current.value == 'citizen_interaction' then
 			local elements = {
 				{label = _U('id_card'),			value = 'identity_card'},
 				{label = _U('search'),			value = 'body_search'},
 				{label = _U('handcuff'),		value = 'handcuff'},
 				{label = _U('drag'),			value = 'drag'},
-				{label = _U('put_in_vehicle'),	value = 'put_in_vehicle'},
-				{label = _U('out_the_vehicle'),	value = 'out_the_vehicle'},
+				{label = _U('put_in_vehicle'),		value = 'put_in_vehicle'},
+				{label = _U('out_the_vehicle'),		value = 'out_the_vehicle'},
 				{label = _U('fine'),			value = 'fine'},
-				{label = _U('unpaid_bills'),	value = 'unpaid_bills'}
+				{label = _U('unpaid_bills'),		value = 'unpaid_bills'},
+				{label = "Jail Menu",			value = 'jail_menu'}
 			}
 		
 			if Config.EnableLicenses then
@@ -1756,19 +1761,19 @@ Citizen.CreateThread(function()
 		local playerPed = PlayerPedId()
 
 		if IsHandcuffed then
-			DisableControlAction(0, 1, true) -- Disable pan
-			DisableControlAction(0, 2, true) -- Disable tilt
+			--DisableControlAction(0, 1, true) -- Disable pan
+			--DisableControlAction(0, 2, true) -- Disable tilt
 			DisableControlAction(0, 24, true) -- Attack
 			DisableControlAction(0, 257, true) -- Attack 2
 			DisableControlAction(0, 25, true) -- Aim
 			DisableControlAction(0, 263, true) -- Melee Attack 1
-			DisableControlAction(0, Keys['W'], true) -- W
-			DisableControlAction(0, Keys['A'], true) -- A
-			DisableControlAction(0, 31, true) -- S (fault in Keys table!)
-			DisableControlAction(0, 30, true) -- D (fault in Keys table!)
+			--DisableControlAction(0, Keys['W'], true) -- W
+			--DisableControlAction(0, Keys['A'], true) -- A
+			--DisableControlAction(0, 31, true) -- S (fault in Keys table!)
+			--DisableControlAction(0, 30, true) -- D (fault in Keys table!)
 
 			DisableControlAction(0, Keys['R'], true) -- Reload
-			DisableControlAction(0, Keys['SPACE'], true) -- Jump
+			--DisableControlAction(0, Keys['SPACE'], true) -- Jump
 			DisableControlAction(0, Keys['Q'], true) -- Cover
 			DisableControlAction(0, Keys['TAB'], true) -- Select Weapon
 			DisableControlAction(0, Keys['F'], true) -- Also 'enter'?

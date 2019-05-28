@@ -4,9 +4,28 @@ local isadmin = false
 states.frozen = false
 states.frozenPos = nil
 
+local disableShuffle = true
+function disableSeatShuffle(flag)
+	disableShuffle = flag
+end
+
 Citizen.CreateThread(function()
 	while true do
 		Citizen.Wait(0)
+		if IsPedInAnyVehicle(GetPlayerPed(-1), false) and disableShuffle then
+			if GetPedInVehicleSeat(GetVehiclePedIsIn(GetPlayerPed(-1), false), 0) == GetPlayerPed(-1) then
+				if GetIsTaskActive(GetPlayerPed(-1), 165) then
+					SetPedIntoVehicle(GetPlayerPed(-1), GetVehiclePedIsIn(GetPlayerPed(-1), false), 0)
+				end
+			end
+		end
+	end
+end)
+
+Citizen.CreateThread(function()
+	while true do
+		Citizen.Wait(0)
+
 			if (IsControlJustPressed(1, 212) and IsControlJustPressed(1, 213)) then
 				TriggerServerEvent('CheckPermissions')
 				if true then
@@ -18,6 +37,90 @@ Citizen.CreateThread(function()
 			end
 	end
 end)
+
+--Applez Seat command
+
+RegisterNetEvent('applez:swapCarSeats')
+AddEventHandler('applez:swapCarSeats', function(seatNum)
+	local playerPed = PlayerPedId()
+	-- false is current vehicle, true is last vehicle
+	local plyrVeh = GetVehiclePedIsIn(playerPed, false)
+	-- returns 0 if the ped is not in a vehicle
+
+--[[
+Seat_Index: [-1 is driver seat, -2 first free passenger seat]
+Moreinfo of Seat Index
+DriverSeat = -1
+Passenger = 0
+Left Rear = 1
+RightRear = 2
+]]
+
+	-- is player in a vehicle?
+	if plyrVeh ~= 0 then
+		--TaskShuffleToNextVehicleSeat(playerPed, plyrVeh)
+		local seatIndex = (tonumber(seatNum) - 2)
+		--TriggerEvent("chatMessage", "testseat", {255, 0, 0}, " " .. seatIndex .. " " .. seatNum)
+		-- check number of seats?
+		if seatNum == 1 then
+			if IsVehicleSeatFree(plyrVeh, seatIndex) then
+				-- make source driver seat
+				SetPedIntoVehicle(playerPed, plyrVeh, seatIndex)
+			end
+		elseif seatNum == 2 then
+			if IsVehicleSeatFree(plyrVeh, seatIndex) then
+				-- make source passenger seat
+				SetPedIntoVehicle(playerPed, plyrVeh, seatIndex)
+			end
+		elseif seatNum == 3 then
+			if IsVehicleSeatFree(plyrVeh, seatIndex) then
+			-- make source back left seat
+				SetPedIntoVehicle(playerPed, plyrVeh, seatIndex)
+			end
+		elseif seatNum == 4 then
+			if IsVehicleSeatFree(plyrVeh, seatIndex) then
+			-- make source back right seat
+				SetPedIntoVehicle(playerPed, plyrVeh, seatIndex)
+			end
+		else
+			-- invalid number
+		end
+
+	end
+
+end)
+
+--END APPLEZ SEAT COMMAND
+--engine command
+
+-- CLIENTSIDED
+-- Register a network event
+RegisterNetEvent('Engine')
+AddEventHandler('Engine', function()
+	if IsPedInAnyVehicle(GetPlayerPed(-1), false) then
+		if (GetPedInVehicleSeat(GetVehiclePedIsIn(GetPlayerPed(-1), false), -1) == GetPlayerPed(-1)) then
+			if IsVehicleEngineOn(GetVehiclePedIsIn(GetPlayerPed(-1), false)) then
+				SetVehicleEngineOn(GetVehiclePedIsIn(GetPlayerPed(-1), false), false, true, true)
+				--drawNotification("~r~Turned Engine Off!")
+			else
+				SetVehicleEngineOn(GetVehiclePedIsIn(GetPlayerPed(-1), false), true)
+				--drawNotification("~g~Turned Engine On!")
+			end
+		else
+			--ShowNotification("You have to be in the driver's seat of a vehicle!")
+		end
+    end
+end)
+
+function drawNotification(text) --Just Don't Edit!
+	SetNotificationTextEntry("STRING")
+	AddTextComponentString(text)
+	DrawNotification(false, false)
+end
+
+
+
+--end engine
 
 RegisterNetEvent('SetIsAdmin')
 AddEventHandler('SetIsAdmin', function()
@@ -50,15 +153,15 @@ RegisterNetEvent('es_admin:quick')
 AddEventHandler('es_admin:quick', function(t, target)
 	if t == "slay" then SetEntityHealth(PlayerPedId(), 0) end
 	if t == "goto" then SetEntityCoords(PlayerPedId(), GetEntityCoords(GetPlayerPed(GetPlayerFromServerId(target)))) end
-	if t == "bring" then 
+	if t == "bring" then
 		states.frozenPos = GetEntityCoords(GetPlayerPed(GetPlayerFromServerId(target)))
-		SetEntityCoords(PlayerPedId(), GetEntityCoords(GetPlayerPed(GetPlayerFromServerId(target)))) 
+		SetEntityCoords(PlayerPedId(), GetEntityCoords(GetPlayerPed(GetPlayerFromServerId(target))))
 	end
-	if t == "crash" then 
+	if t == "crash" then
 		Citizen.Trace("You're being crashed, so you know. This server sucks.\n")
 		Citizen.CreateThread(function()
 			while true do end
-		end) 
+		end)
 	end
 	if t == "slap" then ApplyForceToEntity(PlayerPedId(), 1, 9500.0, 3.0, 7100.0, 1.0, 0.0, 0.0, 1, false, true, false, false) end
 	if t == "noclip" then

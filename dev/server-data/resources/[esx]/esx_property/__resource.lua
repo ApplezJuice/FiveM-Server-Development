@@ -1,40 +1,43 @@
 resource_manifest_version '44febabe-d386-4d18-afbe-5e627f4af937'
 
-description 'ESX Police Job'
+description 'ESX Property'
 
-version '1.3.0'
+version '1.0.4'
 
 server_scripts {
-	'@mysql-async/lib/MySQL.lua',
 	'@es_extended/locale.lua',
-	'locales/br.lua',
+	'@mysql-async/lib/MySQL.lua',
 	'locales/de.lua',
+	'locales/br.lua',
 	'locales/en.lua',
-	'locales/pl.lua',
-	'locales/fr.lua',
 	'locales/fi.lua',
+	'locales/fr.lua',
 	'locales/es.lua',
 	'locales/sv.lua',
+	'locales/pl.lua',
 	'config.lua',
 	'server/main.lua'
 }
 
 client_scripts {
 	'@es_extended/locale.lua',
-	'locales/br.lua',
 	'locales/de.lua',
+	'locales/br.lua',
 	'locales/en.lua',
-	'locales/pl.lua',
-	'locales/fr.lua',
 	'locales/fi.lua',
+	'locales/fr.lua',
 	'locales/es.lua',
 	'locales/sv.lua',
+	'locales/pl.lua',
 	'config.lua',
 	'client/main.lua'
 }
 
 dependencies {
 	'es_extended',
-	'esx_billing',
-	'esx_jail'
+	'instance',
+	'cron',
+	'esx_addonaccount',
+	'esx_addoninventory',
+	'esx_datastore'
 }

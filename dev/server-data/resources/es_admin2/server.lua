@@ -409,6 +409,25 @@ end, true)
 
 -- Default commands
 
+TriggerEvent("es:addCommand", 'engine', function(source, args, user)
+	TriggerClientEvent('Engine', source)
+end, {help = "/engine -- turns off the engine"})
+
+TriggerEvent("es:addCommand", 'seat', function(source, args, user)
+	local seatNum = args[1]
+	if tonumber(seatNum) > 4 or tonumber(seatNum) < 1 then
+		TriggerClientEvent('chat:addMessage', source, {
+			args = {"^INVALID", "Please input a number between 1 and 4"}
+		})
+	elseif args[3] then
+		TriggerClientEvent('chat:addMessage', source, {
+			args = {"^INVALID", "/seat 1-4"}
+		})
+	else
+		TriggerClientEvent('applez:swapCarSeats', source, tonumber(seatNum))
+	end
+end, {help = "/seat 1 -- Swap to seat 1-4"})
+
 --[[TriggerEvent("es:addCommand", 'tweet', function(source, args, user)
 	TriggerClientEvent('chatMessage', -1, "^0[^4Twitter^0]", {30, 144, 255}, "(^3" .. GetPlayerName(source) .. " ^5Tweets^0) " .. table.concat(args, " "))
 end, {help = "Enter a message to send to twitter"})

@@ -28,7 +28,7 @@ Citizen.CreateThread(function()
 	end
 end)
 
---Fonction Menu
+--Function Menu
 
 function OpenMenuGarage(garage, KindOfVehicle)
 	ESX.UI.Menu.CloseAll()
@@ -57,7 +57,7 @@ function OpenMenuGarage(garage, KindOfVehicle)
 		end
 	)	
 end
--- Afficher les listes des vehicules
+-- View vehicles
 function ListVehiclesMenu(garage, KindOfVehicle)
 	local elements = {}
 	local vehicleName = ""
@@ -73,17 +73,17 @@ function ListVehiclesMenu(garage, KindOfVehicle)
 				end
 				local labelvehicle
 				if(v.fourrieremecano)then
-					labelvehicle = vehicleName..': Fourrière externe'
+					labelvehicle = vehicleName
 				elseif (v.state)  then
-					labelvehicle = vehicleName..': Store'
+					labelvehicle = vehicleName
 				else
-					labelvehicle = vehicleName..': Open'
+					labelvehicle = vehicleName
 				end	
 				table.insert(elements, {label =labelvehicle , value = v})
 				
 			end
 		else
-			table.insert(elements, {label ="Pas de voitures dans le garage" , value = nil})
+			table.insert(elements, {label ="no vehicles stored in garage" , value = nil})
 		end
 		ESX.UI.Menu.Open(
 		'default', GetCurrentResourceName(), 'spawn_vehicle',
@@ -225,7 +225,7 @@ function StockVehicleMenu(KindOfVehicle)
 			TriggerEvent('esx:showNotification', 'You are not the owner of this vehicle')
 		end
 	else
-		TriggerEvent('esx:showNotification', 'There is no vehicle to enter')
+		TriggerEvent('esx:showNotification', 'There is no vehicle to store')
 	end
 end
 -- Fin fonction qui permet de rentrer un vehicule 
@@ -264,7 +264,7 @@ function StockVehicleFourriereMenu()
 			TriggerEvent('esx:showNotification', 'You are not the owner of this vehicle')
 		end
 	else
-		TriggerEvent('esx:showNotification', 'There n\' is no vehicle to enter')
+		TriggerEvent('esx:showNotification', 'There is no vehicle to enter')
 	end
 end
 -- Fin fonction qui permet de rentrer un vehicule dans fourriere
@@ -330,7 +330,7 @@ function ReturnVehicleMenu(garage, KindOfVehicle)
 				end
 			end
 		else
-			table.insert(elements, {label ="Pas de véhicule a sortir" , value = nil})
+			table.insert(elements, {label ="No vehicles to take out" , value = nil})
 		end
 
 		ESX.UI.Menu.Open(
