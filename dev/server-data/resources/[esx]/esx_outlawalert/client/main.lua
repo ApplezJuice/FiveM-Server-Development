@@ -2,7 +2,6 @@ ESX = nil
 
 local timing, isPlayerWhitelisted = math.ceil(Config.Timer * 60000), false
 local streetName, playerGender
-local speedLimit = 100.0
 
 Citizen.CreateThread(function()
 	while ESX == nil do
@@ -86,7 +85,8 @@ function GetClosestPed()
 
     for ped in EnumeratePeds() do
         local distanceCheck = GetDistanceBetweenCoords(GetEntityCoords(PlayerPedId()), GetEntityCoords(ped), true)
-        if distanceCheck <= 50.0 then
+
+        if distanceCheck <= 10.0 and distanceCheck ~= 0.0 then
             closestPed = ped
             break
         end
@@ -97,27 +97,48 @@ end
 --end nearest ped
 
 
-
 Citizen.CreateThread(function()
+	local speedLimit = 120.0
+
 	while true do
 		Citizen.Wait(0)
-		local vehicle = GetVehiclePedIsIn(PlayerPedId(),false)
-		if vehicle then
+		local player = GetPlayerPed(-1)
+		local vehicle = GetVehiclePedIsIn(player,false)
+		local vehicleLabel = GetDisplayNameFromVehicleModel(GetEntityModel(vehicle))
+		if vehicle ~= 0 and not isPlayerWhitelisted then
+			--if (IsPedInAnyVehicle(player, false)) then
 		 local currentSpeed = GetEntitySpeed(vehicle) * 2.23
 		 while currentSpeed > speedLimit do
-			 TriggerEvent('esx_outlawalert:applez:outlawNotify', -1, 'speeding', playerGender, vehicle, streetName)
-			 Citizen.Wait(1000)
+		 		--TriggerServerEvent('applez:sendNotification', 'speeding', playerGender, vehicle, streetName)
+			pedIsSpeeding()
+			 TriggerServerEvent('applez:sendCarSpeeding', 'speeding', playerGender, vehicleLabel, streetName)
+			 Citizen.Wait(10000)
 			 currentSpeed = GetEntitySpeed(vehicle) * 2.23
 		 end
 		end
 	end
 end)
 
+function pedIsSpeeding()
+	local playerPed = GetPlayerPed(-1)
+	local playerCoords = GetEntityCoords(playerPed)
+
+	DecorSetInt(playerPed, 'isOutlaw', 2)
+
+	TriggerServerEvent('esx_outlawalert:speedingInProgress', {
+		x = ESX.Math.Round(playerCoords.x, 1),
+		y = ESX.Math.Round(playerCoords.y, 1),
+		z = ESX.Math.Round(playerCoords.z, 1)
+	})
+end
+
 RegisterNetEvent('esx_outlawalert:applez:outlawNotify')
 AddEventHandler('esx_outlawalert:applez:outlawNotify', function(type, gender, car, street)
 	if isPlayerWhitelisted then
+
 		if GetClosestPed() then
-			if type == 'gunshot' then
+			TriggerServerEvent('applez:sendNotification', type, gender, car, street)
+			--[[if type == 'gunshot' then
 				TriggerEvent('chat:addMessage', source, {
 					template = '<div style="padding: 0.5vw; margin: 0.5vw; background-color: rgba(158, 23, 23, 0.6); border-radius: 3px;"> <i class="fas fa-globe"></i> 911 GUNSHOT <br> A '.. gender ..' has been spotted firing a weapon at '.. street ..'</div>'
 				})
@@ -133,7 +154,8 @@ AddEventHandler('esx_outlawalert:applez:outlawNotify', function(type, gender, ca
 				TriggerEvent('chat:addMessage', source, {
 					template = '<div style="padding: 0.5vw; margin: 0.5vw; background-color: rgba(158, 23, 23, 0.6); border-radius: 3px;"> <i class="fas fa-globe"></i> 911 RECKLESS DRIVING <br> A '.. gender ..' has been spotted driving recklessly in a '.. car ..' at '.. street ..'</div>'
 				})
-			end
+
+		--end]]--
 		end
 	end
 end)
@@ -142,9 +164,9 @@ RegisterNetEvent('esx_outlawalert:outlawNotify')
 AddEventHandler('esx_outlawalert:outlawNotify', function(alert)
 	if isPlayerWhitelisted then
 		ESX.ShowNotification(alert)
-		TriggerEvent('chat:addMessage', source, {
+		--[[TriggerEvent('chat:addMessage', source, {
 			template = '<div style="padding: 0.5vw; margin: 0.5vw; background-color: rgba(158, 23, 23, 0.6); border-radius: 3px;"> <i class="fas fa-globe"></i> 911 ALERT - '.. alert ..'</div>'
-		})
+		})]]--
 	end
 end)
 
@@ -194,6 +216,33 @@ function refreshPlayerWhitelisted()
 
 	return false
 end
+
+RegisterNetEvent('esx_outlawalert:speedingInProgress')
+AddEventHandler('esx_outlawalert:speedingInProgress', function(targetCoords)
+	if isPlayerWhitelisted then
+
+			local alpha = 250
+			local thiefBlip = AddBlipForRadius(targetCoords.x, targetCoords.y, targetCoords.z, Config.BlipJackingRadius)
+
+			SetBlipHighDetail(thiefBlip, true)
+			SetBlipColour(thiefBlip, 1)
+			SetBlipAlpha(thiefBlip, alpha)
+			SetBlipAsShortRange(thiefBlip, true)
+
+			while alpha ~= 0 do
+				Citizen.Wait(Config.BlipJackingTime * 4)
+				alpha = alpha - 1
+				SetBlipAlpha(thiefBlip, alpha)
+
+				if alpha == 0 then
+					RemoveBlip(thiefBlip)
+					return
+				end
+			end
+
+
+	end
+end)
 
 RegisterNetEvent('esx_outlawalert:carJackInProgress')
 AddEventHandler('esx_outlawalert:carJackInProgress', function(targetCoords)
@@ -316,7 +365,7 @@ Citizen.CreateThread(function()
 
 		elseif IsPedInMeleeCombat(playerPed) and Config.MeleeAlert then
 
-			Citizen.Wait(3000)
+			Citizen.Wait(10000)
 
 			if (isPlayerWhitelisted and Config.ShowCopsMisbehave) or not isPlayerWhitelisted then
 				DecorSetInt(playerPed, 'isOutlaw', 2)
