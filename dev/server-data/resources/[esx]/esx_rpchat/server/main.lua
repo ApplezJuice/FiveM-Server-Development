@@ -1,3 +1,4 @@
+
 --[[
 
   ESX RP Chat
@@ -203,3 +204,8 @@ function stringsplit(inputstr, sep)
 	end
 	return t
 end
+
+RegisterCommand('checkengine', function(source, args, rawCommand)
+	 local msg = rawCommand:sub(12)
+	 TriggerClientEvent('client:checkEngine', source, msg)
+end, false)

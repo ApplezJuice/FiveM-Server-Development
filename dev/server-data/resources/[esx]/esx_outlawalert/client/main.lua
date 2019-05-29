@@ -2,6 +2,7 @@ ESX = nil
 
 local timing, isPlayerWhitelisted = math.ceil(Config.Timer * 60000), false
 local streetName, playerGender
+local speedLimit = 100.0
 
 Citizen.CreateThread(function()
 	while ESX == nil do
@@ -27,6 +28,114 @@ AddEventHandler('esx:setJob', function(job)
 	ESX.PlayerData.job = job
 
 	isPlayerWhitelisted = refreshPlayerWhitelisted()
+end)
+
+
+-- find closest ped enum
+local entityEnumerator = {
+  __gc = function(enum)
+    if enum.destructor and enum.handle then
+      enum.destructor(enum.handle)
+    end
+    enum.destructor = nil
+    enum.handle = nil
+  end
+}
+
+local function EnumerateEntities(initFunc, moveFunc, disposeFunc)
+  return coroutine.wrap(function()
+    local iter, id = initFunc()
+    if not id or id == 0 then
+      disposeFunc(iter)
+      return
+    end
+
+    local enum = {handle = iter, destructor = disposeFunc}
+    setmetatable(enum, entityEnumerator)
+
+    local next = true
+    repeat
+      coroutine.yield(id)
+      next, id = moveFunc(iter)
+    until not next
+
+    enum.destructor, enum.handle = nil, nil
+    disposeFunc(iter)
+  end)
+end
+
+function EnumerateObjects()
+  return EnumerateEntities(FindFirstObject, FindNextObject, EndFindObject)
+end
+
+function EnumeratePeds()
+  return EnumerateEntities(FindFirstPed, FindNextPed, EndFindPed)
+end
+
+function EnumerateVehicles()
+  return EnumerateEntities(FindFirstVehicle, FindNextVehicle, EndFindVehicle)
+end
+
+function EnumeratePickups()
+  return EnumerateEntities(FindFirstPickup, FindNextPickup, EndFindPickup)
+end
+
+
+function GetClosestPed()
+    local closestPed = 0
+
+    for ped in EnumeratePeds() do
+        local distanceCheck = GetDistanceBetweenCoords(GetEntityCoords(PlayerPedId()), GetEntityCoords(ped), true)
+        if distanceCheck <= 50.0 then
+            closestPed = ped
+            break
+        end
+    end
+
+    return closestPed
+end
+--end nearest ped
+
+
+
+Citizen.CreateThread(function()
+	while true do
+		Citizen.Wait(0)
+		local vehicle = GetVehiclePedIsIn(PlayerPedId(),false)
+		if vehicle then
+		 local currentSpeed = GetEntitySpeed(vehicle) * 2.23
+		 while currentSpeed > speedLimit do
+			 TriggerEvent('esx_outlawalert:applez:outlawNotify', -1, 'speeding', playerGender, vehicle, streetName)
+			 Citizen.Wait(1000)
+			 currentSpeed = GetEntitySpeed(vehicle) * 2.23
+		 end
+		end
+	end
+end)
+
+RegisterNetEvent('esx_outlawalert:applez:outlawNotify')
+AddEventHandler('esx_outlawalert:applez:outlawNotify', function(type, gender, car, street)
+	if isPlayerWhitelisted then
+		if GetClosestPed() then
+			if type == 'gunshot' then
+				TriggerEvent('chat:addMessage', source, {
+					template = '<div style="padding: 0.5vw; margin: 0.5vw; background-color: rgba(158, 23, 23, 0.6); border-radius: 3px;"> <i class="fas fa-globe"></i> 911 GUNSHOT <br> A '.. gender ..' has been spotted firing a weapon at '.. street ..'</div>'
+				})
+			elseif type == 'combat' then
+				TriggerEvent('chat:addMessage', source, {
+					template = '<div style="padding: 0.5vw; margin: 0.5vw; background-color: rgba(158, 23, 23, 0.6); border-radius: 3px;"> <i class="fas fa-globe"></i> 911 FIGHT <br> A '.. gender ..' has been spotted fighting at '.. street ..'</div>'
+				})
+			elseif type == 'carjack' then
+				TriggerEvent('chat:addMessage', source, {
+					template = '<div style="padding: 0.5vw; margin: 0.5vw; background-color: rgba(158, 23, 23, 0.6); border-radius: 3px;"> <i class="fas fa-globe"></i> 911 CARJACK <br> A '.. gender ..' has been spotted stealing a '.. car ..' at '.. street ..'</div>'
+				})
+			elseif type == 'speeding' then
+				TriggerEvent('chat:addMessage', source, {
+					template = '<div style="padding: 0.5vw; margin: 0.5vw; background-color: rgba(158, 23, 23, 0.6); border-radius: 3px;"> <i class="fas fa-globe"></i> 911 RECKLESS DRIVING <br> A '.. gender ..' has been spotted driving recklessly in a '.. car ..' at '.. street ..'</div>'
+				})
+			end
+		end
+	end
 end)
 
 RegisterNetEvent('esx_outlawalert:outlawNotify')

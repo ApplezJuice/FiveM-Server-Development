@@ -14,9 +14,9 @@ Config.EnableLicenses             = true -- enable if you're using esx_license
 Config.EnableHandcuffTimer        = false -- enable handcuff timer? will unrestrain player after the time ends
 Config.HandcuffTimer              = 10 * 60000 -- 10 mins
 
-Config.EnableJobBlip              = false -- enable blips for colleagues, requires esx_society
+Config.EnableJobBlip              = true -- enable blips for colleagues, requires esx_society
 
-Config.MaxInService               = -1
+Config.MaxInService               = 5
 Config.Locale                     = 'en'
 
 Config.PoliceStations = {

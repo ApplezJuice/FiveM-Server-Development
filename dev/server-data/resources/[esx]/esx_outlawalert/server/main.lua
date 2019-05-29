@@ -10,7 +10,8 @@ AddEventHandler('esx_outlawalert:carJackInProgress', function(targetCoords, stre
 		playerGender = _U('female')
 	end
 
-	TriggerClientEvent('esx_outlawalert:outlawNotify', -1, _U('carjack', playerGender, vehicleLabel, streetName))
+	--TriggerClientEvent('esx_outlawalert:outlawNotify', -1, _U('carjack', playerGender, vehicleLabel, streetName))
+	TriggerClientEvent('esx_outlawalert:applez:outlawNotify', -1, 'carjack', playerGender, vehicleLabel, streetName)
 	TriggerClientEvent('esx_outlawalert:carJackInProgress', -1, targetCoords)
 end)
 
@@ -22,7 +23,8 @@ AddEventHandler('esx_outlawalert:combatInProgress', function(targetCoords, stree
 		playerGender = _U('female')
 	end
 
-	TriggerClientEvent('esx_outlawalert:outlawNotify', -1, _U('combat', playerGender, streetName))
+	--TriggerClientEvent('esx_outlawalert:outlawNotify', -1, _U('combat', playerGender, streetName))
+	TriggerClientEvent('esx_outlawalert:applez:outlawNotify', -1, 'combat', playerGender,'na', streetName)
 	TriggerClientEvent('esx_outlawalert:combatInProgress', -1, targetCoords)
 end)
 
@@ -34,7 +36,8 @@ AddEventHandler('esx_outlawalert:gunshotInProgress', function(targetCoords, stre
 		playerGender = _U('female')
 	end
 
-	TriggerClientEvent('esx_outlawalert:outlawNotify', -1, _U('gunshot', playerGender, streetName))
+	--TriggerClientEvent('esx_outlawalert:outlawNotify', -1, _U('gunshot', playerGender, streetName))
+	TriggerClientEvent('esx_outlawalert:applez:outlawNotify', -1, 'gunshot', playerGender,'na', streetName)
 	TriggerClientEvent('esx_outlawalert:gunshotInProgress', -1, targetCoords)
 end)
 
