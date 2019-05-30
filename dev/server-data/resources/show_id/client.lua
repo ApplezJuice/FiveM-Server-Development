@@ -1,85 +1,13 @@
-local disPlayerNames = 5
-local listOn = false
+local showPlayerBlips = false
+local ignorePlayerNameDistance = false
+local playerNamesDist = 15
+local displayIDHeight = 1.5 --Height of ID above players head(starts at center body mass)
+--Set Default Values for Colors
+local red = 255
+local green = 255
+local blue = 255
 
-playerDistances = {}
-
---[[
-if IsControlPressed(0, 27)-- INPUT_PHONE  then
-    if not listOn then
-        local players = {}
-        ptable = GetPlayers()
-        for _, i in ipairs(ptable) do
-            local wantedLevel = GetPlayerWantedLevel(i)
-            r, g, b = GetPlayerRgbColour(i)
-            table.insert(players,
-            '<tr style=\"color: rgb(' .. r .. ', ' .. g .. ', ' .. b .. ')\"><td>' .. GetPlayerServerId(i) .. '</td><td>' .. sanitize(GetPlayerName(i)) .. '</td><td>' .. (wantedLevel and wantedLevel or tostring(0)) .. '</td></tr>'
-            )
-        end
-
-        SendNUIMessage({ text = table.concat(players) })
-
-        listOn = true
-        while listOn do
-            Wait(0)
-            if(IsControlPressed(0, 27) == false) then
-                listOn = false
-                SendNUIMessage({
-                    meta = 'close'
-                })
-                break
-            end
-        end
-    end
-end
-]]
-
-Citizen.CreateThread(function()
-  while true do
-    if IsControlPressed(1, 212)-- INPUT_PHONE  then
-        if not listOn then
-            -- code herre
-            for id = 0, 32 do
-        			if NetworkIsPlayerActive(id) then
-        				--if GetPlayerPed(id) ~= GetPlayerPed(-1) then
-        					if (playerDistances[id] < disPlayerNames) then
-        						x2, y2, z2 = table.unpack(GetEntityCoords(GetPlayerPed(id), true))
-        						if NetworkIsPlayerTalking(id) then
-        							DrawText3D(x2, y2, z2+1, GetPlayerServerId(id), 247,124,24)
-        						else
-        							DrawText3D(x2, y2, z2+1, GetPlayerServerId(id), 255,255,255)
-        						end
-        					end
-        				--end
-        			end
-            end
-            for id = 0, 32 do
-                if GetPlayerPed(id) ~= GetPlayerPed(-1) then
-                    x1, y1, z1 = table.unpack(GetEntityCoords(GetPlayerPed(-1), true))
-                    x2, y2, z2 = table.unpack(GetEntityCoords(GetPlayerPed(id), true))
-                    distance = math.floor(GetDistanceBetweenCoords(x1,  y1,  z1,  x2,  y2,  z2,  true))
-    				playerDistances[id] = distance
-                end
-            end
-
-
-            listOn = true
-            while listOn do
-                Wait(0)
-                if(IsControlPressed(1, 212) == false) then
-                    listOn = false
-                    break
-                end
-            end
-        end
-    end
-
-    Citizen.Wait(0)
-  end
-end)
-
-
-
-function DrawText3D(x,y,z, text, r,g,b)
+function DrawText3D(x,y,z, text)
     local onScreen,_x,_y=World3dToScreen2d(x,y,z)
     local px,py,pz=table.unpack(GetGameplayCamCoords())
     local dist = GetDistanceBetweenCoords(px,py,pz, x,y,z, 1)
@@ -92,7 +20,7 @@ function DrawText3D(x,y,z, text, r,g,b)
         SetTextScale(0.0*scale, 0.55*scale)
         SetTextFont(0)
         SetTextProportional(1)
-        SetTextColour(r, g, b, 255)
+        SetTextColour(red, green, blue, 255)
         SetTextDropshadow(0, 0, 0, 0, 255)
         SetTextEdge(2, 0, 0, 0, 150)
         SetTextDropShadow()
@@ -100,6 +28,62 @@ function DrawText3D(x,y,z, text, r,g,b)
         SetTextEntry("STRING")
         SetTextCentre(1)
         AddTextComponentString(text)
+		World3dToScreen2d(x,y,z, 0) --Added Here
         DrawText(_x,_y)
     end
 end
+
+
+Citizen.CreateThread(function()
+    while true do
+        Citizen.Wait(0)
+        if IsControlPressed(1, 48) then
+
+            for i=0,99 do
+                N_0x31698aa80e0223f8(i)
+            end
+            for id = 0, 31 do
+                if NetworkIsPlayerActive(id) then
+                ped = GetPlayerPed( id )
+                blip = GetBlipFromEntity( ped )
+
+                x1, y1, z1 = table.unpack( GetEntityCoords( GetPlayerPed( -1 ), true ) )
+                x2, y2, z2 = table.unpack( GetEntityCoords( GetPlayerPed( id ), true ) )
+                distance = math.floor(GetDistanceBetweenCoords(x1,  y1,  z1,  x2,  y2,  z2,  true))
+
+                if(ignorePlayerNameDistance) then
+					if NetworkIsPlayerTalking(id) then
+						red = 0
+						green = 0
+						blue = 255
+						DrawText3D(x2, y2, z2 + displayIDHeight, GetPlayerServerId(id))
+					else
+						red = 255
+						green = 255
+						blue = 255
+						DrawText3D(x2, y2, z2 + displayIDHeight, GetPlayerServerId(id))
+					end
+                end
+
+                if ((distance < playerNamesDist)) then
+                    if not (ignorePlayerNameDistance) then
+						if NetworkIsPlayerTalking(id) then
+							red = 0
+							green = 0
+							blue = 255
+							DrawText3D(x2, y2, z2 + displayIDHeight, GetPlayerServerId(id))
+						else
+							red = 255
+							green = 255
+							blue = 255
+							DrawText3D(x2, y2, z2 + displayIDHeight, GetPlayerServerId(id))
+						end
+                    end
+                end
+            end
+        end
+        elseif not IsControlPressed(1, 48) then
+            DrawText3D(0, 0, 0, "")
+        end
+    end
+end)
