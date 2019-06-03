@@ -36,11 +36,3 @@ AddEventHandler('chatMessage', function(source, _, message)
 		end
 	end
 end)
-
-AddEventHandler('chatMessage', function(source, _, message)
-	local msg = string.lower(message)
-	local identifier = GetPlayerIdentifiers(source)[1]
-	if msg == "/checkengine" then
-		TriggerClientEvent('checkengine',source)
-	end
-end)

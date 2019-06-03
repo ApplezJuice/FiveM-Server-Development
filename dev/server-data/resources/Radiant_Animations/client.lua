@@ -779,7 +779,13 @@ RegisterCommand("e",function(source, args)
 					end 
 				end
 			end
-		end
+			elseif argh == 'strip' then
+				local lib = "mini@strip_club@lap_dance@ld_girl_a_song_a_p1"
+				local anim ="ld_girl_a_song_a_p1_f"
+                        	ESX.Streaming.RequestAnimDict(lib, function()
+				TaskPlayAnim(player, lib, anim, 8.0, -8.0, -1, 0, 0, false, false, false)
+				end)
+			end
 	end
 end, false)
 

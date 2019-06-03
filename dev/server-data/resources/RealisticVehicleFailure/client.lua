@@ -450,13 +450,3 @@ Citizen.CreateThread(function()
 		end
 	end
 end)
-RegisterNetEvent('checkengine')
-RegisterCommand('checkengine', function(source,args)
-	local pos = GetEntityCoords(GetPlayerPed(-1),true)
-	local veh = GetClosestVehicle(pos.x,pos.y,pos.z,100.00,0)
-	local healthEngineCurrent = GetVehicleEngineHealth(veh)
-	local oilLevelCurrent = GetVehicleOilLevel(veh)
-	TriggerEvent('chat:addMessage', -1, {args = {'System','Engine Status:' ..healthEngineCurrent.. 'Oil Level' ..oilLevelCurrent}}
-	)
-	return
-end)
