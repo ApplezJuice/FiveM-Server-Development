@@ -73,9 +73,9 @@ ESX.RegisterUsableItem('water', function(source)
 
 	xPlayer.removeInventoryItem('water', 1)
 
-	TriggerClientEvent('esx_status:add', source, 'thirst', 50000)
+	TriggerClientEvent('esx_status:add', source, 'thirst', 200000)
 	TriggerClientEvent('esx_basicneeds:onDrink', source)
-	        TriggerClientEvent('esx_status:add', source, 'hunger', 200000)
+	        TriggerClientEvent('esx_status:add', source, 'hunger', 2000)
         TriggerClientEvent('esx_basicneeds:onEat', source)
         TriggerClientEvent("pNotify:SendNotification", source,{
             text = "<b style='color:white'>Thirst reduced! </b>",

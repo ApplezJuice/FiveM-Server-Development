@@ -5,7 +5,7 @@
       <link href="style.css" rel="stylesheet" type="text/css" />
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">
         <style>
-			 #general, #topbar, #waiting, #lastNameSearchResults
+			 #general, #topbar, #waiting, #lastNameSearchResults, #personSelected
 			 {display: none;}
 		</style>
 	</head>
@@ -65,6 +65,30 @@
 		    		</div>
     			</div>
 	    	</div>
+
+        <!-- ########### Person Selected ###########  -->
+            		<div class="cont-waiting-two" id="personSelected">
+            			<div class="flex">
+            				<div class="mdtMainBox box-shadow">
+        	    				<p>MDT Person Listed<br><br>
+                        <button class="btn btn-grey backToResults">
+            					<i class="fas fa-bars"></i>
+        	    				<span class="fas fa-arrow-left icon"></span>
+            				<p>Return</p>
+            				    </button>
+                        <div class="thisSelectedPerson">
+                          <ul id="ULthisSelectedPerson">
+                          </ul>
+                          <!--<ul id="lastNameResults">
+                            <li>Test Result</li>
+                          </ul>-->
+                        </div>
+        	    				</p>
+        		    		</div>
+            			</div>
+        	    	</div>
+
+
 <!-- ########### WAITING ###########  -->
 	    	<div class="cont-waiting" id="waiting">
 	    		<div class="content-waiting">
@@ -105,7 +129,7 @@
 
         for (var i = 0; i < data.length; i++){
           var li = document.createElement("li");
-          li.appendChild(document.createTextNode(data[i]['firstname'] + " " + data[i]['lastname']));
+          li.appendChild(document.createTextNode(data[i]['firstname'] + " " + data[i]['lastname'] + " - " + data[i]['dateofbirth']));
           //li.setAttribute("id", i)
           ul.appendChild(li);
         }
@@ -114,14 +138,28 @@
       function getPlayerInfo(clickedUser){
         var dataIndex = null;
         for (var i = 0; i < thisData.length; i++){
-          var userString = (thisData[i]['firstname'] + " " + thisData[i]['lastname']);
+          var userString = (thisData[i]['firstname'] + " " + thisData[i]['lastname'] + " - " + thisData[i]['dateofbirth']);
           if (userString == clickedUser) {
             dataIndex = i;
             break;
           }
         }
 
-        alert(thisData[dataIndex]['firstname'] + " " + thisData[dataIndex]['lastname'] + " - " + thisData[dataIndex]['dateofbirth']);
+        var ul = document.getElementById("ULthisSelectedPerson");
+        ul.innerHTML = '';
+        var li = document.createElement("li");
+
+        li.appendChild(document.createTextNode(thisData[dataIndex]['firstname'] + " " + thisData[dataIndex]['lastname']));
+        ul.appendChild(li);
+        li.appendChild(document.createTextNode(thisData[dataIndex]['dateofbirth']));
+        ul.appendChild(li);
+        li.appendChild(document.createTextNode(thisData[dataIndex]['sex']));
+        ul.appendChild(li);
+        li.appendChild(document.createTextNode(thisData[dataIndex]['height']));
+        ul.appendChild(li);
+        li.appendChild(document.createTextNode(thisData[dataIndex]['job']));
+        ul.appendChild(li);
+        //alert(thisData[dataIndex]['firstname'] + " " + thisData[dataIndex]['lastname'] + " - " + thisData[dataIndex]['dateofbirth']);
       }
 
     		$(function() {
@@ -132,7 +170,7 @@
           } else if (event.data.type == "selfName"){
                     $('.username1').html(event.data.player);
 					} else if (event.data.type == "closeAll"){
-		                $('#waiting, #general, #topbar, #lastNameSearchResults').hide();
+		                $('#waiting, #general, #topbar, #lastNameSearchResults, #personSelected').hide();
 		                $('body').removeClass("active");
 					} else if (event.data.type == "nameSearchResults"){
                     var data = event.data.namesearchResult;
@@ -146,16 +184,22 @@
         $('body').on('click', '#ulResults li', function(){
           var selected = $(this).text();
           getPlayerInfo(selected);
+          $('#lastNameSearchResults').hide();
+          $('#personSelected').show();
           //alert("List item: " + selected);
         });
     		$('.btn-sign-out').click(function(){
-	            $('#general, #waiting, #topbar, #lastNameSearchResults').hide();
+	            $('#general, #waiting, #topbar, #lastNameSearchResults, #personSelected').hide();
 	            $('body').removeClass("active");
 	            $.post('http://applezmdt/NUIFocusOff', JSON.stringify({}));
 	        })
 	        $('.back').click(function(){
 	            $('#lastNameSearchResults').hide();
 	            $('#general').show();
+	        })
+          $('.backToResults').click(function(){
+              $('#personSelected').hide();
+	            $('#lastNameSearchResults').show();
 	        })
 	        $('#fingerprint-content').click(function(){
 	            $('.fingerprint-active, .fingerprint-bar').addClass("active")
@@ -183,7 +227,7 @@
 
 			document.onkeyup = function(data){
 		        if (data.which == 27){ //escape key
-		            $('#general, #waiting, #topbar, #lastNameSearchResults').hide();
+		            $('#general, #waiting, #topbar, #lastNameSearchResults, #personSelected').hide();
 		            $('body').removeClass("active");
 		            $.post('http://applezmdt/NUIFocusOff', JSON.stringify({}));
 		        }
